@@ -23,9 +23,9 @@ export const getServerSideProps = async () => {
   }
 };
 
-const CreatePost = ({ subthreads }) => {
+const CreatePost = ({ subthreads }: any) => {
   const [session] = useSession();
-  const [select, setSelect] = useState(null);
+  const [select, setSelect] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -90,7 +90,7 @@ const CreatePost = ({ subthreads }) => {
           >
             {subthreads &&
               subthreads.length &&
-              subthreads.map((subthread) => (
+              subthreads.map((subthread: any) => (
                 <option key={subthread.id} value={subthread.id}>
                   {subthread.name}
                 </option>
