@@ -59,20 +59,20 @@ export const Post: React.FC<PostProps> = ({
             {email} | {name}
           </span>
         </div>
-        <h1 className="font-bold text-md md:text-xl lg:text-xl uppercase py-4">
+        <h1 className="font-bold text-sm md:text-xl lg:text-xl uppercase py-4">
           {title}
         </h1>
-        <p className="pr-2 text-sm md:w-1/2 lg:w-1/2 md:leading lg:leading-loose">
+        <p className="pr-2 text-xs md:w-1/2 lg:w-1/2 md:leading lg:leading-loose">
           {content}
         </p>
-        <div className="flex items-center justify-between my-4 p-2 hover:bg-gray-600 rounded-lg">
-          <FaRocketchat />
-          <Link href={`/post/${id}?userId=${userId}`}>
+        <Link href={`/post/${id}?userId=${userId}`}>
+          <div className="flex items-center justify-between my-4 p-2 bg-gray-600 hover:bg-gray-900 rounded-lg cursor-pointer transition duration-500 ease-in">
+            <FaRocketchat />
             <a className="text-gray-400 ml-2">
               {comments && comments.length ? comments.length : "0"} comments
             </a>
-          </Link>
-        </div>
+          </div>
+        </Link>
       </div>
     </div>
   );

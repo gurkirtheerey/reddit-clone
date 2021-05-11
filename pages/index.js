@@ -135,16 +135,18 @@ export default function Home({ retrievedPosts }) {
         className="flex flex-col items-center justify-center bg-gray-900"
         onClick={toggle ? () => setToggle(false) : null}
       >
-        <div className="w-4/5 flex justify-between items-end">
-          <h1 className="w-4/5 text-2xl md:text-4xl lg:text-4xl font-bold py-6 text-white">
+        <div className="w-full md:w-4/5 lg:w-4/5 flex flex-col md:flex-row lg:flex-row md:justify-between lg:justify-between md:items-center lg:items-center">
+          <h1 className="w-full md:w-4/5 lg:w-4/5 text-2xl md:text-4xl lg:text-4xl font-bold md:py-6 lg:py-6 py-4 px-2 text-white">
             Home
           </h1>
           <select
             value={filter}
             onChange={(e) => updateFilter(e.target.value)}
-            className="h-1/2"
+            className="h-1/2 bg-blue-700 hover:bg-blue-900 p-2 md:rounded-full lg:rounded-full cursor-pointer text-white focus:outline-none transition duration-500 ease-in"
           >
-            <option value="asc">Ascending</option>
+            <option className="bg-blue-300" value="asc">
+              Ascending
+            </option>
             <option value="desc">Descending</option>
           </select>
         </div>

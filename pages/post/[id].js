@@ -112,13 +112,16 @@ const PostDetails = ({ post, userId }) => {
           {!session ? <SigninMessage /> : <CommentForm />}
 
           <div className="w-full md:w-4/5 lg:w-4/5 m-auto">
-            {comments &&
-              comments.length &&
-              comments.map((comment, i) => (
-                <React.Fragment key={comment?.id || i}>
-                  <Comment comment={comment.comment} author={comment.author} />
-                </React.Fragment>
-              ))}
+            {comments && comments.length
+              ? comments.map((comment, i) => (
+                  <React.Fragment key={comment?.id || i}>
+                    <Comment
+                      comment={comment.comment}
+                      author={comment.author}
+                    />
+                  </React.Fragment>
+                ))
+              : null}
           </div>
         </div>
       </div>
