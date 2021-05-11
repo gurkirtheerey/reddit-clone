@@ -30,7 +30,7 @@ export default function Home({ subthreads, postdata }) {
       ? localStorage.getItem("filter") || "asc"
       : "asc"
   );
-  const [sort, setSort] = useState("");
+  const [sort, setSort] = useState([]);
   const [session] = useSession();
   const width = useWindowSize();
   const router = useRouter();
@@ -40,8 +40,12 @@ export default function Home({ subthreads, postdata }) {
   );
 
   useEffect(() => {
-    console.log(sort);
-  }, [sort]);
+    let tempArr = subthreads.map((thread) => {
+      return { value: thread.id, label: `p/${thread.name}` };
+    });
+    tempArr.push({ value: subthreads.length + 1, label: "Home" });
+    setSort(tempArr);
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -125,15 +129,20 @@ export default function Home({ subthreads, postdata }) {
     localStorage.setItem("filter", value);
   };
 
+  const handleChange = (selection) => {
+    if (selection.label !== "Home") {
+      setPosts(postdata.filter((post) => post.subthreadId === selection.value));
+    } else {
+      setPosts(postdata);
+    }
+  };
+
   return (
     <>
       <Head>
         <title>Postify | Reddit Clone</title>
       </Head>
       <Navbar
-        subthreads={subthreads}
-        sort={sort}
-        setSort={setSort}
         toggle={toggle}
         toggleOff={toggleOff}
         toggleOn={toggleOn}
@@ -148,7 +157,7 @@ export default function Home({ subthreads, postdata }) {
             Home
           </h1>
           <div className="w-1/2">
-            <Select options={[{ value: "test", label: "hi" }]} />
+            <Select options={sort} isSearchable onChange={handleChange} />
           </div>
           <select
             value={filter}
