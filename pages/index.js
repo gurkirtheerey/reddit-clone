@@ -35,13 +35,10 @@ export default function Home({ retrievedPosts }) {
   const router = useRouter();
 
   useEffect(() => {
-    switch (filter) {
-      case "asc":
-        setSortedPosts(() => posts.sort((a, b) => a.id - b.id));
-      case "desc":
-        setSortedPosts(() => posts.sort((a, b) => a.id - b.id));
-    }
-  }, [posts, filter]);
+    setSortedPosts(
+      posts.sort((a, b) => (filter === "asc" ? a.id - b.id : b.id - a.id))
+    );
+  }, [filter]);
 
   useEffect(() => {
     (async () => {
@@ -76,6 +73,7 @@ export default function Home({ retrievedPosts }) {
           let idx = posts.findIndex((p) => p.id === post.id);
           let p = posts.find((p) => p.id === post.id);
           let temp = [...posts];
+          p.downLikesFrom = post.downLikesFrom;
           p.upLikesFrom = post.upLikesFrom;
           temp[idx] = p;
           setPosts(temp);
@@ -89,9 +87,32 @@ export default function Home({ retrievedPosts }) {
   };
 
   const downlikePost = async (post) => {
-    console.log(post);
-    post.likes = post.likes + 1;
-    console.log(post);
+    if (session && session.user) {
+      const { email } = session.user;
+      try {
+        const res = await axios.post(
+          "http://localhost:3000/api/posts/dislike",
+          {
+            post,
+            email,
+          }
+        );
+        if (res && res.data) {
+          const post = res.data;
+          let idx = posts.findIndex((p) => p.id === post.id);
+          let p = posts.find((p) => p.id === post.id);
+          let temp = [...posts];
+          p.upLikesFrom = post.upLikesFrom;
+          p.downLikesFrom = post.downLikesFrom;
+          temp[idx] = p;
+          setPosts(temp);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    } else {
+      router.push("/api/auth/signin");
+    }
   };
 
   const updateFilter = (value) => {
@@ -133,6 +154,7 @@ export default function Home({ retrievedPosts }) {
               <Post
                 userId={user && user.id}
                 upLikesFrom={post.upLikesFrom}
+                downLikesFrom={post.downLikesFrom}
                 uplikePost={() => uplikePost(post)}
                 downlikePost={() => downlikePost(post)}
                 title={post.title}

@@ -7,10 +7,12 @@ import { SigninMessage } from "../../components/SigninMessage";
 import { CommentForm } from "../../components/CommentForm";
 import { Navbar } from "../../components/Navbar";
 import { useWindowSize } from "../../hooks/useWindowSize";
+import { useRouter } from "next/router";
 
 export const getServerSideProps = async (context) => {
   const queryParams = context.query;
   const { id, userId } = queryParams;
+
   try {
     const res = await axios.post("http://localhost:3000/api/posts/single", {
       data: { id },
@@ -24,13 +26,58 @@ export const getServerSideProps = async (context) => {
 };
 
 const PostDetails = ({ post, userId }) => {
-  const { title, content, createdAt, author, comments, likes } = post;
+  const { title, content, createdAt, author, comments } = post;
+  const [toggle, setToggle] = useState(false);
+  const [target, setTarget] = useState(post);
   const [session] = useSession();
   const width = useWindowSize();
-  const [toggle, setToggle] = useState(false);
-
+  const router = useRouter();
   const toggleOn = () => setToggle(true);
   const toggleOff = () => setToggle(false);
+
+  userId = parseInt(userId);
+
+  const uplikePost = async (post) => {
+    if (session && session.user) {
+      const { email } = session.user;
+      try {
+        const res = await axios.post("http://localhost:3000/api/posts/like", {
+          post,
+          email,
+        });
+        if (res && res.data) {
+          const post = res.data;
+          setTarget(post);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    } else {
+      router.push("/api/auth/signin");
+    }
+  };
+  const downlikePost = async (post) => {
+    if (session && session.user) {
+      const { email } = session.user;
+      try {
+        const res = await axios.post(
+          "http://localhost:3000/api/posts/dislike",
+          {
+            post,
+            email,
+          }
+        );
+        if (res && res.data) {
+          const post = res.data;
+          setTarget(post);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    } else {
+      router.push("/api/auth/signin");
+    }
+  };
 
   return (
     <>
@@ -50,9 +97,10 @@ const PostDetails = ({ post, userId }) => {
           <div className="flex justify-center items-center">
             <Post
               userId={userId}
-              upLikesFrom={post.upLikesFrom}
-              uplikePost={() => console.log("post")}
-              downlikePost={() => console.log("post")}
+              upLikesFrom={target.upLikesFrom}
+              downLikesFrom={target.downLikesFrom}
+              uplikePost={() => uplikePost(target)}
+              downlikePost={() => downlikePost(target)}
               title={title}
               createdAt={createdAt}
               content={content}

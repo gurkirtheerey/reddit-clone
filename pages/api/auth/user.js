@@ -16,6 +16,7 @@ export default async (req, res) => {
             content: true,
             id: true,
             upLikesFrom: true,
+            downLikesFrom: true,
           },
         },
       },

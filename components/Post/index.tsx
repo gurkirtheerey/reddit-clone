@@ -20,7 +20,7 @@ export const Post: React.FC<PostProps> = ({
     <div className="bg-gray-700 p-1 my-1 md:p-4 lg:p-4 md:my-4 lg:my=4 w-full md:w-4/5 lg:w-4/5 flex text-gray-200 md:rounded-lg lg:rounded-lg hover:shadow-2xl transition duration-500 ease-in-out">
       <div className="flex flex-col items-center justify-evenly p-2 h-24">
         <FaArrowUp
-          className={`cursor-pointer`}
+          className="cursor-pointer"
           size={24}
           color={`${
             upLikesFrom &&
@@ -32,9 +32,10 @@ export const Post: React.FC<PostProps> = ({
           onClick={uplikePost}
         />
         <span className="text-md font-bold">
-          {upLikesFrom && upLikesFrom.length ? `${upLikesFrom.length}` : "0"}
+          {upLikesFrom?.length - downLikesFrom?.length || 0}
         </span>
         <FaArrowDown
+          className="cursor-pointer"
           size={24}
           onClick={downlikePost}
           color={`${
