@@ -26,6 +26,7 @@ export default async (req, res) => {
             downLikesFrom: { set: down },
             upLikesFrom: { set: up },
           },
+          include: { comments: { include: { author: true } } },
           where: {
             id: post.id,
           },
@@ -40,6 +41,8 @@ export default async (req, res) => {
           data: {
             upLikesFrom: { set: up },
           },
+
+          include: { comments: { include: { author: true } } },
           where: {
             id: post.id,
           },

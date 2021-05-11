@@ -26,12 +26,15 @@ export const getServerSideProps = async (context) => {
 };
 
 const PostDetails = ({ post, userId }) => {
-  const { title, content, createdAt, author, comments } = post;
+  const { title, content, createdAt, author } = post;
   const [toggle, setToggle] = useState(false);
   const [target, setTarget] = useState(post);
+  const [savedAuthor, setSavedAuthor] = useState(author);
+  const [comment, setComment] = useState("");
   const [session] = useSession();
   const width = useWindowSize();
   const router = useRouter();
+
   const toggleOn = () => setToggle(true);
   const toggleOff = () => setToggle(false);
 
@@ -56,6 +59,7 @@ const PostDetails = ({ post, userId }) => {
       router.push("/api/auth/signin");
     }
   };
+
   const downlikePost = async (post) => {
     if (session && session.user) {
       const { email } = session.user;
@@ -79,6 +83,22 @@ const PostDetails = ({ post, userId }) => {
     }
   };
 
+  const handleSubmit = async () => {
+    const { id } = target;
+    try {
+      const res = await axios.post("http://localhost:3000/api/comments/add", {
+        comment,
+        userId,
+        id,
+      });
+      const { data } = res;
+      setTarget(data);
+      setComment("");
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   return (
     <>
       <div className="h-24 bg-gray-900">
@@ -96,6 +116,7 @@ const PostDetails = ({ post, userId }) => {
         <div className={`flex flex-col `}>
           <div className="flex justify-center items-center">
             <Post
+              subthread={post.subthread}
               userId={userId}
               upLikesFrom={target.upLikesFrom}
               downLikesFrom={target.downLikesFrom}
@@ -104,23 +125,31 @@ const PostDetails = ({ post, userId }) => {
               title={title}
               createdAt={createdAt}
               content={content}
-              author={author}
-              comments={comments}
+              author={savedAuthor}
+              comments={target.comments}
+              post={target}
             />
           </div>
 
-          {!session ? <SigninMessage /> : <CommentForm />}
+          {!session ? (
+            <SigninMessage />
+          ) : (
+            <CommentForm
+              handleSubmit={handleSubmit}
+              comment={comment}
+              setComment={setComment}
+            />
+          )}
 
           <div className="w-full md:w-4/5 lg:w-4/5 m-auto">
-            {comments && comments.length
-              ? comments.map((comment, i) => (
-                  <React.Fragment key={comment?.id || i}>
-                    <Comment
-                      comment={comment.comment}
-                      author={comment.author}
-                    />
-                  </React.Fragment>
-                ))
+            {target.comments && target.comments.length
+              ? target.comments
+                  .sort((a, b) => b.id - a.id)
+                  .map((comment, i) => (
+                    <React.Fragment key={comment?.id || i}>
+                      <Comment comment={comment} />
+                    </React.Fragment>
+                  ))
               : null}
           </div>
         </div>

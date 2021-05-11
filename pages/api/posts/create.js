@@ -3,7 +3,7 @@ import prisma from "../../../lib/prisma";
 export default async (req, res) => {
   const data = req.body.data;
   if (data) {
-    const { email } = data;
+    const { email, select } = data;
     try {
       const user = await prisma.user.findUnique({
         where: { email },
@@ -17,6 +17,7 @@ export default async (req, res) => {
               title: data.title,
               content: data.content,
               published: false,
+              subthreadId: parseInt(select),
             },
           });
           return res.status(200).send(response);

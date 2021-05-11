@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import { CommentProps } from "../../types/CommentProps";
 import { FaArrowUp, FaArrowDown, FaRocketchat } from "react-icons/fa";
 
-export const Comment: React.FC<CommentProps> = ({ comment, likes, author }) => {
-  const { email, image, name } = author;
+export const Comment: React.FC<CommentProps> = ({ comment }) => {
+  const { image, name, email } = comment?.author;
   const [open, setOpen] = useState(false);
   return (
-    <div className="w-full bg-gray-700 flex flex-col my-1 md:my-4 lg:my-4 md:rounded-lg lg:rounded-lg">
+    <div className="w-full bg-gray-800 flex flex-col my-1 md:my-4 lg:my-4 md:rounded-lg lg:rounded-lg">
       <div className="text-white flex ">
         <div className="flex flex-col items-center justify-evenly p-2 h-24">
           <FaArrowUp className="cursor-pointer" size={18} />
@@ -22,7 +22,7 @@ export const Comment: React.FC<CommentProps> = ({ comment, likes, author }) => {
           </div>
           <div className="flex flex-col justify-between ml-4">
             <span className="my-4 md:font-semibold lg:font-semibold text-xs md:text-sm lg:text-sm">
-              {comment}
+              {comment.comment}
             </span>
             <div
               className="flex justify-around items-center bg-gray-800 px-4 py-2 rounded text-xs mb-2 cursor-pointer hover:bg-gray-900"

@@ -9,8 +9,9 @@ export default async (req, res) => {
         include: {
           author: true,
           comments: {
-            select: { comment: true, likes: true, author: true },
+            select: { comment: true, author: true, id: true, postId: true },
           },
+          subthread: true,
         },
       });
       return res.status(200).send(post);

@@ -13,4 +13,5 @@ export interface PostProps {
   upLikesFrom: any[];
   downLikesFrom: any[];
   userId: number;
+  subthread: any;
 }

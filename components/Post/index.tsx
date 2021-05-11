@@ -14,6 +14,7 @@ export const Post: React.FC<PostProps> = ({
   upLikesFrom,
   downLikesFrom,
   userId,
+  subthread,
 }) => {
   const { email, name, image } = author;
   return (
@@ -48,6 +49,7 @@ export const Post: React.FC<PostProps> = ({
         />
       </div>
       <div className="flex flex-col justify-around items-start md:ml-4 lg:ml-4 w-full">
+        <span className="py-4 text-sm text-gray-300">p/{subthread?.name}</span>
         <div className="flex items-center justify-center text-xs">
           <img
             src={image}

@@ -18,21 +18,30 @@ model Comment {
   authorId  Int
   Post      Post?    @relation(fields: [postId], references: [id])
   postId    Int?
-  likes     Int      @default(0)
 }
 
 model Post {
-  id            Int       @id @default(autoincrement())
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  title         String    @db.VarChar(255)
+  id            Int        @id @default(autoincrement())
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  title         String     @db.VarChar(255)
   content       String?
-  published     Boolean   @default(false)
-  author        User      @relation(fields: [authorId], references: [id])
+  published     Boolean    @default(false)
+  author        User       @relation(fields: [authorId], references: [id])
   authorId      Int
   comments      Comment[]
   upLikesFrom   Int[]
   downLikesFrom Int[]
+  subthread     Subthread? @relation(fields: [subthreadId], references: [id])
+  subthreadId   Int?
+}
+
+model Subthread {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  name      String   @db.VarChar(255)
+  posts     Post[]
+  followers User[]
 }
 
 model Profile {
@@ -44,8 +53,8 @@ model Profile {
 }
 
 model User {
-  id             Int       @id @default(autoincrement())
-  email          String    @unique
+  id             Int        @id @default(autoincrement())
+  email          String     @unique
   name           String?
   image          String?
   posts          Post[]
@@ -53,4 +62,6 @@ model User {
   Comment        Comment[]
   upLikedPosts   Int[]
   downLikedPosts Int[]
+  Subthread      Subthread? @relation(fields: [subthreadId], references: [id])
+  subthreadId    Int?
 }

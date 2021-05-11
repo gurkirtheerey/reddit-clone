@@ -14,13 +14,6 @@ export const Navigation = () => {
           </a>
         </Link>
       </h2>
-      <div className="w-1/3">
-        <input
-          className="w-full py-2 px-4 font-bold rounded text-gray-400 focus:outline-none cursor-default bg-gray-900"
-          type="text"
-          placeholder="Search Subthreads"
-        />
-      </div>
       <div>
         {!session ? (
           <button
@@ -31,11 +24,11 @@ export const Navigation = () => {
           </button>
         ) : (
           <div>
-            <button className="bg-gray-700 hover:bg-gray-900 py-2 px-4 m-2 rounded focus:outline-none transition duration-200 ease-in">
-              <Link href="/post">
+            <Link href="/post">
+              <button className="bg-gray-700 hover:bg-gray-900 py-2 px-4 m-2 rounded focus:outline-none transition duration-200 ease-in">
                 <a>Create Post</a>
-              </Link>
-            </button>
+              </button>
+            </Link>
             <button
               onClick={() => signOut()}
               className="bg-gray-700 hover:bg-gray-900 py-2 px-4 m-2 rounded focus:outline-none transition duration-200 ease-in"
