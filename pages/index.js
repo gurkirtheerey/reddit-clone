@@ -6,7 +6,6 @@ import { Post } from "../components/Post";
 import { useWindowSize } from "../hooks/useWindowSize";
 import { Navbar } from "../components/Navbar";
 import { useRouter } from "next/router";
-import { useFilter } from "../hooks/useFilter";
 
 export const getServerSideProps = async () => {
   const res = await axios.get("http://localhost:3000/api/posts/post");
@@ -30,14 +29,19 @@ export default function Home({ retrievedPosts }) {
       ? localStorage.getItem("filter") || "asc"
       : "asc"
   );
+  const [sortedPosts, setSortedPosts] = useState([]);
   const [session] = useSession();
   const width = useWindowSize();
   const router = useRouter();
 
-  let ppp =
-    filter === "asc"
-      ? posts.sort((a, b) => a.id - b.id)
-      : posts.sort((a, b) => b.id - a.id);
+  useEffect(() => {
+    switch (filter) {
+      case "asc":
+        setSortedPosts(() => posts.sort((a, b) => a.id - b.id));
+      case "desc":
+        setSortedPosts(() => posts.sort((a, b) => a.id - b.id));
+    }
+  }, [posts, filter]);
 
   useEffect(() => {
     (async () => {
@@ -123,8 +127,8 @@ export default function Home({ retrievedPosts }) {
             <option value="desc">Descending</option>
           </select>
         </div>
-        {ppp && ppp.length ? (
-          ppp.map((post, i) => (
+        {sortedPosts && sortedPosts.length ? (
+          sortedPosts.map((post, i) => (
             <React.Fragment key={post.id}>
               <Post
                 userId={user && user.id}
