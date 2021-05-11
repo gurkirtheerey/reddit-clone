@@ -1,4 +1,4 @@
-export interface Author {
+export interface AuthorProps {
   id: number;
   email: string;
   image: string;

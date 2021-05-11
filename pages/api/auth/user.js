@@ -7,7 +7,18 @@ export default async (req, res) => {
   try {
     const user = await prisma.user.findUnique({
       where: { email },
-      include: { posts: true },
+      include: {
+        posts: {
+          select: {
+            author: true,
+            authorId: true,
+            title: true,
+            content: true,
+            id: true,
+            upLikesFrom: true,
+          },
+        },
+      },
     });
     if (!user) {
       try {

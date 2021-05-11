@@ -1,26 +1,43 @@
 import Head from "next/head";
 import axios from "axios";
-import { signIn, useSession } from "next-auth/client";
-import React, { useEffect } from "react";
-import { Navigation } from "../components/Navigation";
+import { useSession } from "next-auth/client";
+import React, { useEffect, useState } from "react";
 import { Post } from "../components/Post";
-import Link from "next/link";
+import { useWindowSize } from "../hooks/useWindowSize";
+import { Navbar } from "../components/Navbar";
+import { useRouter } from "next/router";
+import { useFilter } from "../hooks/useFilter";
 
 export const getServerSideProps = async () => {
   const res = await axios.get("http://localhost:3000/api/posts/post");
-  const posts = res.data;
-  if (!posts) {
+  const retrievedPosts = res.data;
+  if (!retrievedPosts) {
     return {
       notFound: true,
     };
   }
   return {
-    props: { posts },
+    props: { retrievedPosts },
   };
 };
 
-export default function Home({ posts }) {
-  const [session, loading] = useSession();
+export default function Home({ retrievedPosts }) {
+  const [toggle, setToggle] = useState(false);
+  const [posts, setPosts] = useState(retrievedPosts);
+  const [user, setUser] = useState(null);
+  const [filter, setFilter] = useState(
+    typeof window !== "undefined"
+      ? localStorage.getItem("filter") || "asc"
+      : "asc"
+  );
+  const [session] = useSession();
+  const width = useWindowSize();
+  const router = useRouter();
+
+  let ppp =
+    filter === "asc"
+      ? posts.sort((a, b) => a.id - b.id)
+      : posts.sort((a, b) => b.id - a.id);
 
   useEffect(() => {
     (async () => {
@@ -29,30 +46,99 @@ export default function Home({ posts }) {
         const res = await axios.post("api/auth/user", {
           data: { email, image, name },
         });
+        if (res && res.data) {
+          const { user } = res.data;
+          if (user) {
+            setUser(user);
+          }
+        }
       }
     })();
   }, [session]);
+
+  const toggleOn = () => setToggle(true);
+  const toggleOff = () => setToggle(false);
+
+  const uplikePost = async (post) => {
+    if (session && session.user) {
+      const { email } = session.user;
+      try {
+        const res = await axios.post("http://localhost:3000/api/posts/like", {
+          post,
+          email,
+        });
+        if (res && res.data) {
+          const post = res.data;
+          let idx = posts.findIndex((p) => p.id === post.id);
+          let p = posts.find((p) => p.id === post.id);
+          let temp = [...posts];
+          p.upLikesFrom = post.upLikesFrom;
+          temp[idx] = p;
+          setPosts(temp);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    } else {
+      router.push("/api/auth/signin");
+    }
+  };
+
+  const downlikePost = async (post) => {
+    console.log(post);
+    post.likes = post.likes + 1;
+    console.log(post);
+  };
+
+  const updateFilter = (value) => {
+    setFilter(value);
+    localStorage.setItem("filter", value);
+  };
 
   return (
     <>
       <Head>
         <title>Postify | Reddit Clone</title>
       </Head>
-      <Navigation />
-      <div className="flex flex-col items-center justify-center bg-gray-800">
-        <h1 className="w-4/5 text-4xl font-bold py-6 text-white">Home</h1>
-        {posts && posts.length ? (
-          posts.map((post, i) => (
-            <Link href={`/${post.id}`} key={post.id}>
-              <a className="flex justify-center w-3/5 hover:cursor-default">
-                <Post
-                  title={post.title}
-                  createdAt={post.createdAt}
-                  content={post.content}
-                  author={post.author}
-                />
-              </a>
-            </Link>
+      <Navbar
+        toggle={toggle}
+        toggleOff={toggleOff}
+        toggleOn={toggleOn}
+        width={width}
+      />
+      <div
+        className="flex flex-col items-center justify-center bg-gray-900"
+        onClick={toggle ? () => setToggle(false) : null}
+      >
+        <div className="w-4/5 flex justify-between items-end">
+          <h1 className="w-4/5 text-2xl md:text-4xl lg:text-4xl font-bold py-6 text-white">
+            Home
+          </h1>
+          <select
+            value={filter}
+            onChange={(e) => updateFilter(e.target.value)}
+            className="h-1/2"
+          >
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+          </select>
+        </div>
+        {ppp && ppp.length ? (
+          ppp.map((post, i) => (
+            <React.Fragment key={post.id}>
+              <Post
+                userId={user && user.id}
+                upLikesFrom={post.upLikesFrom}
+                uplikePost={() => uplikePost(post)}
+                downlikePost={() => downlikePost(post)}
+                title={post.title}
+                createdAt={post.createdAt}
+                content={post.content}
+                author={post.author}
+                id={post.id}
+                comments={post.comments}
+              />
+            </React.Fragment>
           ))
         ) : (
           <h1>Nothing.. it's empty</h1>

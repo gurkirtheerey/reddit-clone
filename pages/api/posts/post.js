@@ -2,7 +2,9 @@ import prisma from "../../../lib/prisma";
 
 export default async (req, res) => {
   try {
-    const data = await prisma.post.findMany({ include: { author: true } });
+    const data = await prisma.post.findMany({
+      include: { author: true, comments: true },
+    });
     if (data) {
       return res.status(200).send(data);
     } else {
