@@ -25,11 +25,11 @@ export const Comment: React.FC<CommentProps> = ({ comment }) => {
               {comment.comment}
             </span>
             <div
-              className="flex justify-around items-center bg-gray-800 px-4 py-2 rounded text-xs mb-2 cursor-pointer hover:bg-gray-900"
+              className="flex justify-between items-center bg-gray-800 px-4 py-2 rounded text-xs mb-2 cursor-pointer hover:bg-gray-900"
               onClick={() => setOpen(!open)}
             >
               <FaRocketchat />
-              Reply
+              <span className="px-2">Reply</span>
             </div>
           </div>
         </div>
